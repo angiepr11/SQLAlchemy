@@ -1,0 +1,32 @@
+from sqlalchemy import create_engine, Column, Integer, String, Sequence
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+# Define the SQLAlchemy model
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
+    name = Column(String(50), nullable=False)
+    age = Column(Integer)
+
+# Create a SQLite database engine
+engine = create_engine('sqlite:///example.db')
+
+# Create tables
+Base.metadata.create_all(engine)
+
+# Create a session to perform database queries
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Insert data
+new_user = User(name='Alice', age=25)
+session.add(new_user)
+session.commit()
+
+# Query data
+users = session.query(User).all()
+for user in users:
+    print(f"User {user.id}: {user.name}, {user.age} years old")
